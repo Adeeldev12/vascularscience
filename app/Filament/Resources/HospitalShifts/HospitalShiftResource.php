@@ -2,29 +2,30 @@
 
 namespace App\Filament\Resources\HospitalShifts;
 
-use BackedEnum;
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
-use App\Models\HospitalShift;
-use App\Models\ScientistRate;
-use Filament\Actions\EditAction;
-use Filament\Resources\Resource;
-use Filament\Tables\Grouping\Group;
-use Filament\Support\Icons\Heroicon;
-use Illuminate\Support\Facades\Date;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Section;
-use Filament\Tables\Columns\BadgeColumn;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\TimePicker;
+use App\Filament\Resources\HospitalShifts\Pages\CreateHospitalShift;
 use App\Filament\Resources\HospitalShifts\Pages\EditHospitalShift;
 use App\Filament\Resources\HospitalShifts\Pages\ListHospitalShifts;
-use App\Filament\Resources\HospitalShifts\Pages\CreateHospitalShift;
 use App\Filament\Resources\HospitalShifts\Schemas\HospitalShiftForm;
 use App\Filament\Resources\HospitalShifts\Tables\HospitalShiftsTable;
+use App\Models\HospitalShift;
+use App\Models\ScientistRate;
+use BackedEnum;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\TimePicker;
+use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Grouping\Group;
+use Filament\Tables\Table;
+use Illuminate\Support\Facades\Date;
 
 class HospitalShiftResource extends Resource
 {
@@ -48,6 +49,43 @@ class HospitalShiftResource extends Resource
 
                     DatePicker::make('shift_date')
                         ->required(),
+
+    Grid::make(2) // 👈 controls only time fields
+            ->schema([
+                TimePicker::make('start_time')
+                    ->label('Start Time')
+                    ->seconds(false)
+                    ->required(),
+
+                TimePicker::make('end_time')
+    ->label('End Time')
+    ->seconds(false)
+    ->required()
+    ->rules([
+        function ($get) {
+            return function (string $attribute, $value, \Closure $fail) use ($get) {
+                $start = $get('start_time');
+
+                if (!$start || !$value) {
+                    return;
+                }
+
+                $startTime = \Carbon\Carbon::parse($start);
+                $endTime = \Carbon\Carbon::parse($value);
+
+                // ❌ End must be after start
+                if ($endTime->lessThanOrEqualTo($startTime)) {
+                    $fail('End time must be greater than start time.');
+                }
+
+                // ❌ Minimum 30 minutes difference
+                if ($startTime->diffInMinutes($endTime) < 30) {
+                    $fail('Shift must be at least 30 minutes long.');
+                }
+            };
+        },
+    ]),
+            ]),
                 ]),
 
             Section::make('Scientist Assignment')
@@ -130,7 +168,7 @@ class HospitalShiftResource extends Resource
     ->searchable(),
 
             TextColumn::make('shift_date')
-                ->date(),
+                ->date('d M Y'),
 
             // TextColumn::make('shift_start')
             //     ->label('Start')
@@ -156,6 +194,14 @@ class HospitalShiftResource extends Resource
                 ->money('GBP')
                 ->label('Pay')
                 ->sortable(),
+
+                TextColumn::make('start_time')
+    ->label('Start Time')
+    ->time('h:i A'),
+
+TextColumn::make('end_time')
+    ->label('End Time')
+    ->time('h:i A'),
 
                 BadgeColumn::make('status')
                 ->colors([

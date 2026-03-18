@@ -32,7 +32,8 @@ class ScientistPanelProvider extends PanelProvider
             ->resources([
             AvailabilityResource::class,
         ])
-            ->brandLogo(asset('images/Vescular-Science-light.png'))
+            ->brandLogo(asset('images/Vescular-Science-dark.png')) // for light mode
+->darkModeBrandLogo(asset('images/Vescular-Science-light.png')) // for dark mode
             ->brandName('Vascular Science')
             ->favicon(asset('images/vascularscience-favicon.webp'))
             ->renderHook(
@@ -54,7 +55,7 @@ class ScientistPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Scientist/Widgets'), for: 'App\Filament\Scientist\Widgets')
             ->widgets([
                 AccountWidget::class,
-                // FilamentInfoWidget::class, 
+                // FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

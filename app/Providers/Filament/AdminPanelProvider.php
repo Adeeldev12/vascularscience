@@ -30,7 +30,9 @@ class AdminPanelProvider extends PanelProvider
             ->default() // ✅ ensures Filament builds a full panel instance
             ->id('admin')
             ->path('admin')
-            ->brandLogo(asset('images/Vescular-Science-light.png'))
+            // ->brandLogo(asset('images/Vescular-Science-dark.png'))
+            ->brandLogo(asset('images/Vescular-Science-dark.png')) // for light mode
+->darkModeBrandLogo(asset('images/Vescular-Science-light.png')) // for dark mode
             ->brandName('Vascular Science')
             ->favicon(asset('images/vascularscience-favicon.webp'))
 

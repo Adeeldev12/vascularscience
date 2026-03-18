@@ -21,6 +21,8 @@ class HospitalShift extends Model
         'total_pay',
         'status',
         'notes',
+        'start_time',
+        'end_time',
     ];
 
     // protected $casts = [
