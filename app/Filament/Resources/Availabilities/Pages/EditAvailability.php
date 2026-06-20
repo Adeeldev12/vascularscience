@@ -14,6 +14,12 @@ class EditAvailability extends EditRecord
 {
     protected static string $resource = AvailabilityResource::class;
 
+    protected static ?string $navigationLabel = 'Rota';
+
+ public function getTitle(): string
+    {
+        return 'Rota';
+    }
      protected function afterSave(): void
     {
         $availability = $this->record;

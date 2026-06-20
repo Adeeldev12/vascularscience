@@ -168,6 +168,8 @@ class HospitalShiftResource extends Resource
     ->searchable(),
 
             TextColumn::make('shift_date')
+        ->label('Shift Date')
+
                 ->date('d M Y'),
 
             // TextColumn::make('shift_start')

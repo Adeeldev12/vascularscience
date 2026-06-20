@@ -33,139 +33,343 @@ class AvailabilityResource extends Resource
 {
     protected static ?string $model = Availability::class;
 
+    protected static ?string $navigationLabel = 'Rota';
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCalendarDays;
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    // public static function form(Schema $schema): Schema
+    // {
+    //     // ✅ Build components dynamically
+    //     $fields = [];
+
+    //     // Scientist field (dynamic)
+    //     if (Auth::guard('scientist')->check()) {
+    //         $fields[] = Hidden::make('scientist_id')
+    //             ->default(Auth::guard('scientist')->id());
+    //     } else {
+    //         $fields[] = Select::make('scientist_id')
+    //             ->label('Scientist')
+    //             ->relationship('scientist', 'name')
+    //             ->preload()          // ✅ preload all scientists
+    //             ->native(false)
+    //             ->searchable()
+    //             ->required();
+    //     }
+
+    //     // // Add remaining form fields
+    //     // $fields[] = DatePicker::make('date')->required()->native(false);
+    //     $fields[] = DatePicker::make('date')
+    //         ->native(false)
+    //         ->required()
+    //         ->minDate(now()->timezone('Asia/Karachi')->toDateString())
+    //         ->rule(function () {
+    //             return function ($attribute, $value, $fail) {
+    //                 if (Carbon::parse($value)->isBefore(today('Asia/Karachi'))) {
+    //                     $fail('You cannot select a past date.');
+    //                 }
+    //             };
+    //         });
+
+    //     // START TIME
+    //     $fields[] = TimePicker::make('start_time')
+    //         ->seconds(false)
+    //         ->format('H:i')
+    //         ->timezone('Asia/Karachi')
+    //         ->required()
+    //         ->rule(function (callable $get) {
+    //             return function ($attribute, $value, $fail) use ($get) {
+
+    //                 $date = $get('date');
+    //                 if (! $date || ! $value) {
+    //                     return;
+    //                 }
+
+    //                 $start = Carbon::parse("$date $value");
+    //                 $endValue = $get('end_time');
+
+    //                 // ❗ Block past times
+    //                 $now = Carbon::now('Asia/Karachi');
+    //                 if ($start->lt($now)) {
+    //                     $fail('You cannot select a past time.');
+
+    //                     return;
+    //                 }
+
+    //                 if (! $endValue) {
+    //                     return;
+    //                 }
+
+    //                 $end = Carbon::parse("$date $endValue");
+
+    //                 if ($start >= $end) {
+    //                     $fail('Start time must be before end time.');
+    //                 }
+
+    //                 if ($start->diffInMinutes($end) < 30) {
+    //                     $fail('Minimum duration must be 30 minutes.');
+    //                 }
+    //             };
+    //         });
+
+    //     // END TIME
+    //     $fields[] = TimePicker::make('end_time')
+    //         ->seconds(false)
+    //         ->format('H:i')
+    //         ->timezone('Asia/Karachi')
+    //         ->required()
+    //         ->rule(function (callable $get) {
+    //             return function ($attribute, $value, $fail) use ($get) {
+
+    //                 $date = $get('date');
+    //                 if (! $date || ! $value) {
+    //                     return;
+    //                 }
+
+    //                 $end = Carbon::parse("$date $value");
+    //                 $startValue = $get('start_time');
+
+    //                 // ❗ Block past times
+    //                 $now = Carbon::now('Asia/Karachi');
+    //                 if ($end->lt($now)) {
+    //                     $fail('You cannot select a past time.');
+
+    //                     return;
+    //                 }
+
+    //                 if (! $startValue) {
+    //                     return;
+    //                 }
+
+    //                 $start = Carbon::parse("$date $startValue");
+
+    //                 if ($end <= $start) {
+    //                     $fail('End time must be after start time.');
+    //                 }
+
+    //                 if ($start->diffInMinutes($end) < 30) {
+    //                     $fail('Availability must be at least 30 minutes.');
+    //                 }
+    //             };
+    //         });
+
+    //     // Status — remove "pending"
+    //     $fields[] = Select::make('status')
+    //         ->options([
+    //             'available' => 'Available',
+    //             'unavailable' => 'Unavailable',
+    //         ])
+    //         ->native(false)
+    //         ->required();
+
+    //     $fields[] = Textarea::make('note')->rows(3);
+
+    //     // ✅ Pass built fields to schema()
+    //     return AvailabilityForm::configure($schema)->schema($fields);
+    // }
+
     public static function form(Schema $schema): Schema
-    {
-        // ✅ Build components dynamically
-        $fields = [];
+{
+    $fields = [];
 
-        // Scientist field (dynamic)
-        if (Auth::guard('scientist')->check()) {
-            $fields[] = Hidden::make('scientist_id')
-                ->default(Auth::guard('scientist')->id());
-        } else {
-            $fields[] = Select::make('scientist_id')
-                ->label('Scientist')
-                ->relationship('scientist', 'name')
-                ->preload()          // ✅ preload all scientists
-                ->native(false)
-                ->searchable()
-                ->required();
-        }
-
-        // // Add remaining form fields
-        // $fields[] = DatePicker::make('date')->required()->native(false);
-        $fields[] = DatePicker::make('date')
+    // Scientist field
+    if (Auth::guard('scientist')->check()) {
+        $fields[] = Hidden::make('scientist_id')
+            ->default(Auth::guard('scientist')->id());
+    } else {
+        $fields[] = Select::make('scientist_id')
+            ->label('Scientist')
+            ->relationship('scientist', 'name')
+            ->preload()
             ->native(false)
-            ->required()
-            ->minDate(now()->timezone('Europe/London')->toDateString())
-            ->rule(function () {
-                return function ($attribute, $value, $fail) {
-                    if (Carbon::parse($value)->isBefore(today('Europe/London'))) {
-                        $fail('You cannot select a past date.');
-                    }
-                };
-            });
-
-        // START TIME
-        $fields[] = TimePicker::make('start_time')
-            ->seconds(false)
-            ->format('H:i')
-            ->timezone('Europe/London')
-            ->required()
-            ->rule(function (callable $get) {
-                return function ($attribute, $value, $fail) use ($get) {
-
-                    $date = $get('date');
-                    if (! $date || ! $value) {
-                        return;
-                    }
-
-                    $start = Carbon::parse("$date $value");
-                    $endValue = $get('end_time');
-
-                    // ❗ Block past times
-                    $now = Carbon::now('Europe/London');
-                    if ($start->lt($now)) {
-                        $fail('You cannot select a past time.');
-
-                        return;
-                    }
-
-                    if (! $endValue) {
-                        return;
-                    }
-
-                    $end = Carbon::parse("$date $endValue");
-
-                    if ($start >= $end) {
-                        $fail('Start time must be before end time.');
-                    }
-
-                    if ($start->diffInMinutes($end) < 30) {
-                        $fail('Minimum duration must be 30 minutes.');
-                    }
-                };
-            });
-
-        // END TIME
-        $fields[] = TimePicker::make('end_time')
-            ->seconds(false)
-            ->format('H:i')
-            ->timezone('Europe/London')
-            ->required()
-            ->rule(function (callable $get) {
-                return function ($attribute, $value, $fail) use ($get) {
-
-                    $date = $get('date');
-                    if (! $date || ! $value) {
-                        return;
-                    }
-
-                    $end = Carbon::parse("$date $value");
-                    $startValue = $get('start_time');
-
-                    // ❗ Block past times
-                    $now = Carbon::now('Europe/London');
-                    if ($end->lt($now)) {
-                        $fail('You cannot select a past time.');
-
-                        return;
-                    }
-
-                    if (! $startValue) {
-                        return;
-                    }
-
-                    $start = Carbon::parse("$date $startValue");
-
-                    if ($end <= $start) {
-                        $fail('End time must be after start time.');
-                    }
-
-                    if ($start->diffInMinutes($end) < 30) {
-                        $fail('Availability must be at least 30 minutes.');
-                    }
-                };
-            });
-
-        // Status — remove "pending"
-        $fields[] = Select::make('status')
-            ->options([
-                'available' => 'Available',
-                'unavailable' => 'Unavailable',
-            ])
-            ->native(false)
+            ->searchable()
             ->required();
-
-        $fields[] = Textarea::make('note')->rows(3);
-
-        // ✅ Pass built fields to schema()
-        return AvailabilityForm::configure($schema)->schema($fields);
     }
+
+    // DATE
+    $fields[] = DatePicker::make('date')
+        ->native(false)
+        ->required()
+        ->minDate(now()->timezone('Asia/Karachi')->toDateString())
+        ->rule(function () {
+            return function ($attribute, $value, $fail) {
+                if (Carbon::parse($value)->isBefore(today('Asia/Karachi'))) {
+                    $fail('You cannot select a past date.');
+                }
+            };
+        });
+
+    // START TIME
+    $fields[] = TimePicker::make('start_time')
+        ->seconds(false)
+        ->label('Start Time')
+        ->format('H:i')
+        ->timezone('Asia/Karachi')
+        ->required()
+        ->rule(function (callable $get) {
+            return function ($attribute, $value, $fail) use ($get) {
+
+                $date = $get('date');
+                if (! $date || ! $value) {
+                    return;
+                }
+
+                $start = Carbon::createFromFormat('Y-m-d H:i', "$date $value", 'Asia/Karachi');
+$endValue = $get('end_time');
+
+                // ❗ Block past time
+                $now = Carbon::now('Asia/Karachi');
+                if ($start->lt($now)) {
+                    $fail('You cannot select a past time.');
+                    return;
+                }
+
+                if (! $endValue) {
+                    return;
+                }
+
+                $end = Carbon::parse("$date $endValue");
+
+               if ($start->gte($end)) {
+    $fail('Start time must be before end time.');
+}
+
+                if ($start->diffInMinutes($end, false) < 30) {
+                    $fail('Minimum duration must be 30 minutes.');
+                }
+
+                $ignoreId = $get('id') ?? null;
+
+                // 🧪 SCIENTIST → BLOCK ALL OVERLAPS
+                if (Auth::guard('scientist')->check()) {
+
+                    $data = [
+                        'scientist_id' => $get('scientist_id'),
+                        'date' => $date,
+                        'start_time' => $get('start_time'),
+                        'end_time' => $endValue,
+                    ];
+
+                    if (\App\Models\Availability::hasOverlapFor($data, $ignoreId)) {
+                        $fail('This time slot overlaps with an existing one.');
+                    }
+                }
+
+                // 👨‍💼 ADMIN → BLOCK ONLY SAME STATUS OVERLAP
+                else {
+
+                    $exists = \App\Models\Availability::where('scientist_id', $get('scientist_id'))
+                        ->where('date', $date)
+                        ->where('start_time', '<', $endValue)
+                        ->where('end_time', '>', $value)
+                        ->where('status', $get('status')) // 👈 key line
+                        ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
+                        ->exists();
+
+                    if ($exists) {
+                        $fail('This time slot with same status already exists.');
+                    }
+                }
+            };
+        });
+
+    // END TIME
+    $fields[] = TimePicker::make('end_time')
+        ->seconds(false)
+        ->format('H:i')
+        ->timezone('Asia/Karachi')
+        ->label('End Time')
+        ->required()
+        ->rule(function (callable $get) {
+            return function ($attribute, $value, $fail) use ($get) {
+
+                $date = $get('date');
+                if (! $date || ! $value) {
+                    return;
+                }
+
+               $end = Carbon::createFromFormat('Y-m-d H:i', "$date $value", 'Asia/Karachi');
+$startValue = $get('start_time');
+
+                // ❗ Block past time
+                $now = Carbon::now('Asia/Karachi');
+                if ($end->lt($now)) {
+                    $fail('You cannot select a past time.');
+                    return;
+                }
+
+                if (! $startValue) {
+                    return;
+                }
+
+                $start = Carbon::parse("$date $startValue");
+
+                // dd($value, $start, $end);
+
+                if ($end <= $start) {
+                    $fail('End time must be after start time.');
+                }
+
+               if ($start->diffInMinutes($end, false) < 30) {
+                    $fail('Availability must be at least 30 minutes.');
+                }
+
+                $ignoreId = $get('id') ?? null;
+
+                // 🧪 SCIENTIST → BLOCK ALL OVERLAPS
+                if (Auth::guard('scientist')->check()) {
+
+                    $data = [
+                        'scientist_id' => $get('scientist_id'),
+                        'date' => $date,
+                        'start_time' => $startValue,
+                        'end_time' => $value,
+                    ];
+
+                    // if (\App\Models\Availability::hasOverlapFor($data, $ignoreId)) {
+                    //     $fail('This time slot overlaps with an existing one.');
+                    // }
+                   if (Availability::hasOverlapFor($data, $ignoreId, null, true)) {
+    $fail('This time slot overlaps with an existing one.');
+}
+                }
+
+                // 👨‍💼 ADMIN → BLOCK ONLY SAME STATUS OVERLAP
+                else {
+
+                    $exists = \App\Models\Availability::where('scientist_id', $get('scientist_id'))
+                        ->where('date', $date)
+                        ->where('start_time', '<', $value)
+                        ->where('end_time', '>', $startValue)
+                        ->where('status', $get('status')) // 👈 key line
+                        ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
+                        ->exists();
+
+                    if ($exists) {
+                        $fail('This time slot with same status already exists.');
+                    }
+                }
+            };
+        });
+
+    // STATUS
+    $fields[] = Select::make('status')
+        ->options([
+            'available' => 'Available',
+            'unavailable' => 'Unavailable',
+        ])
+        ->native(false)
+        ->required();
+
+
+    // NOTE
+    $fields[] = Textarea::make('note')->rows(3);
+
+    return AvailabilityForm::configure($schema)->schema($fields);
+}
+
+
 
     public static function table(Table $table): Table
     {
@@ -181,12 +385,19 @@ class AvailabilityResource extends Resource
                     ->date('d M Y'), // format the date,
 
                 TextColumn::make('start_time')
-                    ->label('Start Time')
-                    ->time(),
+    ->label('Start Time')
+    ->formatStateUsing(fn ($state) =>
+        \Carbon\Carbon::parse($state)
+            ->timezone('Asia/Karachi')
+            ->format('h:i A')
+    ),
 
                 TextColumn::make('end_time')
-                    ->label('End Time')
-                    ->time(),
+    ->formatStateUsing(fn ($state) =>
+        \Carbon\Carbon::parse($state)
+            ->timezone('Asia/Karachi')
+            ->format('h:i A')
+    ),
 
                 BadgeColumn::make('status')
                     ->colors([

@@ -32,9 +32,12 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             // ->brandLogo(asset('images/Vescular-Science-dark.png'))
             ->brandLogo(asset('images/Vescular-Science-dark.png')) // for light mode
-->darkModeBrandLogo(asset('images/Vescular-Science-light.png')) // for dark mode
+->darkModeBrandLogo(asset('images/high resolution VS logo.png')) // for dark mode
             ->brandName('Vascular Science')
+            ->brandLogoHeight('2.5rem')
             ->favicon(asset('images/vascularscience-favicon.webp'))
+
+
 
 
             // ✅ Authentication pages setup

@@ -466,7 +466,7 @@ class ScientistResource extends Resource
                 ->tooltip(fn ($state) => $state ? 'CV Uploaded' : 'CV Missing'),
 
             IconColumn::make('hcpc_registration_path')
-                ->label('HCPC')
+                ->label('AHCS/HCPC')
                 ->icon(fn ($state) => $state ? 'heroicon-o-document-check' : 'heroicon-o-document')
                 ->color(fn ($state) => $state ? 'success' : 'danger')
                 ->tooltip(fn ($state) => $state ? 'HCPC Uploaded' : 'HCPC Missing'),

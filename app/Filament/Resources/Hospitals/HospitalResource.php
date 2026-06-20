@@ -44,14 +44,14 @@ class HospitalResource extends Resource
                 ->required()
                 ->maxLength(255),
 
-            TextInput::make('registration_number')
-                // ->required()
-                ->unique(ignoreRecord: true),
+            // TextInput::make('registration_number')
+            //     // ->required()
+            //     ->unique(ignoreRecord: true),
 
-            TextInput::make('year_established')
-                ->numeric()
-                ->minValue(1800)
-                ->maxValue(now()->year),
+            // TextInput::make('year_established')
+            //     ->numeric()
+            //     ->minValue(1800)
+            //     ->maxValue(now()->year),
 
             TextInput::make('official_email')
                 ->email(),
@@ -66,7 +66,7 @@ class HospitalResource extends Resource
             TextInput::make('website_url')
                 ->url(),
 
-            TextInput::make('fax_number'),
+            // TextInput::make('fax_number'),
 
             Textarea::make('address')
                 // ->required()
@@ -82,14 +82,14 @@ class HospitalResource extends Resource
             TextInput::make('administrator_phone'),
                 // ->required(),
 
-            Select::make('ownership_type')
-                // ->required()
-                ->options([
-                    'government' => 'Government',
-                    'private' => 'Private',
-                    'ngo' => 'NGO',
-                    'university' => 'University / Teaching Hospital',
-                ]),
+            // Select::make('ownership_type')
+            //     // ->required()
+            //     ->options([
+            //         'government' => 'Government',
+            //         'private' => 'Private',
+            //         'ngo' => 'NGO',
+            //         'university' => 'University / Teaching Hospital',
+            //     ]),
             ]);
     }
 
@@ -99,8 +99,8 @@ class HospitalResource extends Resource
 
          ->columns([
                 TextColumn::make('name')->searchable(),
-                TextColumn::make('registration_number'),
-                TextColumn::make('ownership_type')->badge(),
+                // TextColumn::make('registration_number'),
+                // TextColumn::make('ownership_type')->badge(),
                 TextColumn::make('official_email'),
                 TextColumn::make('phone_number'),
                 // TextColumn::make('created_at')->date(),
